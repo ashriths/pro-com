@@ -1,0 +1,8 @@
+INFO:serverLogger:Server created on ashishs-MacBook-Pro.local listening to port 5000
+INFO:serverLogger:New request to join Network (Address : ('127.0.0.1', 50675) )
+INFO:serverLogger:New request to join Network (Address : ('127.0.0.1', 50676) )
+INFO:serverLogger:New request to join Network (Address : ('127.0.0.1', 50677) )
+INFO:serverLogger:New request to join Network (Address : ('127.0.0.1', 50678) )
+INFO:serverLogger:New request to join Network (Address : ('127.0.0.1', 50679) )
+INFO:serverLogger:New request to join Network (Address : ('127.0.0.1', 50680) )
+INFO:serverLogger:New request to join Network (Address : ('127.0.0.1', 50681) )
