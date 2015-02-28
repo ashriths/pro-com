@@ -40,4 +40,3 @@ class NetworkGenerator:
 # logging.basicConfig(filename='server.log', filemode='w', level=logging.DEBUG)
 gen = NetworkGenerator()
 gen.start()
-
