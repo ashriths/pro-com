@@ -12,7 +12,6 @@ class TCPException(Exception):
 
 class TCPConnection(object):
     def __init__(self, ip='127.0.0.1', port=5001):
-
         """
         :rtype : object
         :type ip: str

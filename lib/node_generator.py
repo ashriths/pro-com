@@ -7,12 +7,11 @@ from multiprocessing import Process
 from model.node import Node
 
 
-class NetworkGenerator:
+class NodeGenerator(Node):
     def __init__(self):
-        self.nodes = []
+        Node.__init__()
         self.neighbor_map = {}
         self.socket = None
-        self.port = None
         self.listener = None
         self.ip = '127.0.0.1'
         logging.basicConfig(filename='server.log', filemode='w', level=logging.DEBUG)
@@ -29,15 +28,7 @@ class NetworkGenerator:
             self.socket.bind(address)
 
     def listen(self):
-        self.port = 5000
-        bind = False
-        while not bind:
-            try:
-                self.socket.bind((self.ip, self.port))
-                bind = True
-                print("Server created on %s listening to port %s" % (self.ip, self.port))
-            except socket.error:
-                self.port += 1
+        self.socket.bind((self.ip, 5000))
         while True:
             self.socket.listen(5)
             connection, address = self.socket.accept()
@@ -58,5 +49,6 @@ class NetworkGenerator:
 
 
 # logging.basicConfig(filename='server.log', filemode='w', level=logging.DEBUG)
+
 
 
