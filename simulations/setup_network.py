@@ -10,4 +10,4 @@ while True:
     if c == '1':
         gen.start()
     if c == '2':
-        gen.stop()
+        exit()

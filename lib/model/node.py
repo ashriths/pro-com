@@ -4,9 +4,11 @@ import logging
 
 
 class Node(object):
-    def __init__(self, address):
+    def __init__(self, ip='127.0.0.1', port=5000):
         self.neighbors = []
-        self.address = address
+        self.ip = ip
+        self.port = port
+
 
     def add_neighbor(self, node):
         """
