@@ -20,8 +20,11 @@ class NetworkGenerator:
         self.listener = Process(target=self.listen)
 
     def broadcast(self, message):
-        for address in self.nodes:
-            self.socket.bind(address)
+        for node in self.nodes:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect((node.ip, node.port))
+            s.send(message)
+            s.close()
 
     def listen(self):
         self.port = 5000
@@ -39,18 +42,17 @@ class NetworkGenerator:
             self.process_message(connection.recv(BUFFER_SIZE))
 
     def process_message(self, msg):
-        try:
-            message = json.loads(msg)
-            if message['type'] == 'intro':
-                data = message['data']
-                node = Node(ip=data['ip'], port=data['port'])
-                self.nodes.append(node)
-                print "New request to join Network (Address : %s )" % str(data)
-                print "Total Nodes in Network = " + str(len(self.nodes))
-                print self.nodes
-
-        except Exception:
-            print 'Bad Message received'
+        # try:
+        message = json.loads(msg)
+        if message['type'] == 'intro':
+            data = message['data']
+            node = Node(ip=data['ip'], port=data['port'])
+            self.nodes.append(node)
+            self.broadcast(json.dumps(
+                {'type': 'admin_broadcast', 'from': 'admin', 'data': "New Node in Network, Address : %s" % str(data)}))
+            print "New request to join Network (Addr1ess : %s )" % str(data)
+            print "Total Nodes in Network = " + str(len(self.nodes))
+            print self.nodes
 
 
     def stop(self):

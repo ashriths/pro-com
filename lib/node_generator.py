@@ -7,6 +7,8 @@ import json
 from model.node import Node
 
 
+BUFFER_SIZE = 1024
+
 class NodeGenerator(Node):
     def __init__(self, network_address):
         Node.__init__(self)
@@ -38,6 +40,17 @@ class NodeGenerator(Node):
         while True:
             self.socket.listen(5)
             connection, address = self.socket.accept()
+            self.process_message(connection.recv(BUFFER_SIZE))
+
+    def process_message(self, msg):
+        try:
+            message = json.loads(msg)
+            if message['type'] == 'admin_broadcast':
+                data = message['data']
+                print "BROADCAST: %s" % data
+
+        except Exception:
+            print 'Bad Message received'
 
 
     def stop(self):
