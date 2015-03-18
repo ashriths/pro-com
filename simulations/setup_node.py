@@ -3,6 +3,8 @@ __author__ = 'ashrith'
 from lib.node_generator import NodeGenerator
 
 network_ip = raw_input("Enter Network IP:")
+if network_ip == "":
+    network_ip = "127.0.0.1"
 network_port = int(raw_input("Enter Network PORT:"))
 
 node = NodeGenerator((network_ip, network_port))
