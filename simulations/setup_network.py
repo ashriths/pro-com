@@ -1,6 +1,7 @@
 __author__ = 'ashrith'
 
 from lib.network_generator import NetworkGenerator
+from threading import Thread
 
 gen = NetworkGenerator()
 while True:
@@ -10,4 +11,4 @@ while True:
     if c == '1':
         gen.start()
     if c == '2':
-        exit()
+        gen.stop();

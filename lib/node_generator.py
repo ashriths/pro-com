@@ -2,9 +2,11 @@ __author__ = 'ashrith'
 
 import socket
 from multiprocessing import Process
+from threading import Thread
 import json
 
 from model.node import Node
+from tracker import ColourTracker
 
 
 BUFFER_SIZE = 1024
@@ -15,11 +17,22 @@ class NodeGenerator(Node):
         self.network_address = network_address
         self.neighbor_map = {}
         self.socket = None
-        self.listener = Process(target=self.listen)
+        self.listener = Thread(target=self.listen, name = "listen")
+        #print self.listener.getName()
+        #self.tracker = Process(target=self.track)
 
+
+    # def track(self):
+
+
+    def broadcast_neighbours(self, message):
+        for node in self.neighbors:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect((node.ip, node.port))
+            s.send(message)
+            s.close()
 
     def listen(self):
-
         # find a port that is free for listening and bind my listener
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.port = 5000
