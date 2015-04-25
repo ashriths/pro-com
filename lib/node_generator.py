@@ -20,6 +20,7 @@ class NodeGenerator(Node):
         self.socket = None
         self.listener = Thread(target=self.listen, name = "listen")
         self.tracker = Thread(target=self.track, name= "track")
+        self.objects = {}
         #print self.listener.getName()
         #self.tracker = Process(target=self.track)
 
@@ -71,6 +72,10 @@ class NodeGenerator(Node):
             if message['type'] == 'admin_broadcast':
                 data = message['data']
                 print "BROADCAST: %s" % data
+            if message['type'] == 'object_info':
+                data = message['data']
+                print "Received Object data : %s" % data
+                self.objects[data['color']] = data
 
         except Exception:
             print 'Bad Message received'
