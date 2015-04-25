@@ -29,8 +29,7 @@ class ColourTracker:
 
         # ([17, 15, 100], [50, 56, 200])
 
-        #dilation = np.ones((15, 15), "uint8")
-        #red_binary = cv2.dilate(red_binary, dilation)
+
 
         contours, hierarchy = cv2.findContours(red_binary, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
         area3={};

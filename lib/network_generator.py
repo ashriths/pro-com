@@ -70,6 +70,7 @@ class NetworkGenerator(Thread):
 
     def stop(self):
             self.run = False
+            print "Server Stopped"
     # def start(self):
     #     self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     #     self.listener.run()

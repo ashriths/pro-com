@@ -14,7 +14,8 @@ class ColourTracker:
         self.yy = 1
     def run(self):
         while True:
-            f, orig_img = self.capture.read()
+            # f, orig_img = self.capture.read()
+            orig_img = cv2.imread("detect_simple.png")
             orig_img = cv2.flip(orig_img, 1)
             img = cv2.GaussianBlur(orig_img, (5,5), 0)
             img = cv2.cvtColor(orig_img, cv2.COLOR_BGR2HSV)
@@ -40,6 +41,7 @@ class ColourTracker:
                 box = cv2.cv.BoxPoints(rect)
                 box = np.int0(box)
                 cv2.drawContours(orig_img,[box], 0, (0, 0, 255), 2)
+
                 i+=1;
 
             cv2.imshow("ColourTrackerWindow", orig_img)

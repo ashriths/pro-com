@@ -4,6 +4,7 @@ import socket
 from multiprocessing import Process
 from threading import Thread
 import json
+import time
 
 from model.node import Node
 from tracker import ColourTracker
@@ -18,6 +19,7 @@ class NodeGenerator(Node):
         self.neighbor_map = {}
         self.socket = None
         self.listener = Thread(target=self.listen, name = "listen")
+        self.tracker = Thread(target=self.track, name= "track")
         #print self.listener.getName()
         #self.tracker = Process(target=self.track)
 
@@ -31,6 +33,14 @@ class NodeGenerator(Node):
             s.connect((node.ip, node.port))
             s.send(message)
             s.close()
+
+    def track(self):
+        # track
+        colour_tracker = ColourTracker()
+        while True:
+            pos = colour_tracker.track_it()
+            time.sleep(1)
+            self.broadcast_neighbours()
 
     def listen(self):
         # find a port that is free for listening and bind my listener
@@ -68,9 +78,12 @@ class NodeGenerator(Node):
 
     def stop(self):
         self.listener.terminate()
+        self.tracker.terminate()
 
     def start(self):
         self.listener.run()
+        self.tracker.run()
+
 
 
 

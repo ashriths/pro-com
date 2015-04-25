@@ -31,7 +31,7 @@ class ColourTracker:
         if area > max_area:
           max_area = area
           largest_contour = contour
-      if not largest_contour == None:
+      if True:
         moment = cv2.moments(largest_contour)
         if moment["m00"] > 1000 / self.scale_down:
           rect = cv2.minAreaRect(largest_contour)
