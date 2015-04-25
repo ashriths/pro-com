@@ -41,7 +41,8 @@ class NodeGenerator(Node):
         while True:
             pos = colour_tracker.track_it()
             time.sleep(1)
-            self.broadcast_neighbours()
+            color = 'red' # update this line to get me the color of the object from tracker
+            self.broadcast_neighbours(json.dumps({'type': 'object_info', 'data': {'color': color, 'history' : self.objects[color].data.history }))
 
     def listen(self):
         # find a port that is free for listening and bind my listener
