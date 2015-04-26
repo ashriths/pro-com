@@ -20,6 +20,7 @@ class NodeGenerator(Node):
         self.socket = None
         self.listener = Thread(target=self.listen, name = "listen")
         self.tracker = Thread(target=self.track, name= "track")
+        self.objects = {}
         #print self.listener.getName()
         #self.tracker = Process(target=self.track)
 
@@ -40,7 +41,8 @@ class NodeGenerator(Node):
         while True:
             pos = colour_tracker.track_it()
             time.sleep(1)
-            self.broadcast_neighbours()
+            color = 'red' # update this line to get me the color of the object from tracker
+            self.broadcast_neighbours(json.dumps({'type': 'object_info', 'data': {'color': color, 'history' : self.objects[color].data.history }))
 
     def listen(self):
         # find a port that is free for listening and bind my listener
@@ -71,6 +73,10 @@ class NodeGenerator(Node):
             if message['type'] == 'admin_broadcast':
                 data = message['data']
                 print "BROADCAST: %s" % data
+            if message['type'] == 'object_info':
+                data = message['data']
+                print "Received Object data : %s" % data
+                self.objects[data['color']] = data
 
         except Exception:
             print 'Bad Message received'
