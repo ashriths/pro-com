@@ -77,6 +77,7 @@ class ColourTracker:
             # cv2.destroyWindow("bgsub")
             cv2.destroyAllWindows()
             self.capture.release()
+        time.sleep(1)
         return self.present;
 
     def printText(self, img, contour, text):
@@ -111,4 +112,5 @@ class ColourTracker:
 
 if __name__ == "__main__":
   colour_tracker = ColourTracker()
-  colour_tracker.track_it()
+  while True:
+    print colour_tracker.track_it()
