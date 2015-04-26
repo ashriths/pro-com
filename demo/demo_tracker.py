@@ -31,7 +31,6 @@ class ColourTracker:
 
 
 
-        contours, hierarchy = cv2.findContours(red_binary, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
         area3={};
         for idx, contour in enumerate(contours):
             area3[cv2.contourArea(contour)]=contour

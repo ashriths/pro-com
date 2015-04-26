@@ -6,14 +6,17 @@ import numpy as np
 
 from collections import OrderedDict
 import time
+import datetime
 class ColourTracker:
     def __init__(self):
         cv2.namedWindow("ColourTrackerWindow", cv2.CV_WINDOW_AUTOSIZE)
         self.capture = cv2.VideoCapture(0)
-        #attempt to subtrack background
-        # self.kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3,3))
-        # self.fgbg = cv2.BackgroundSubtractorMOG()
+
         self.colors = ('red', 'green', 'blue')
+        self.present = {'red':{}, 'blue':{}, 'green':{}}
+        for key in self.present:
+            self.present[key]['present'] = False
+            self.present[key]['timestamp'] = None
         self.scale_down = 4
         self.lower = {}
         self.upper = {}
@@ -26,8 +29,8 @@ class ColourTracker:
         self.lower['red'] = np.array([160, 120, 80],np.uint8)
         self.upper['red'] = np.array([180, 255, 200],np.uint8)
 
-        self.lower['green'] = np.array([85,80,150],np.uint8)
-        self.upper['green'] = np.array([95,255,160],np.uint8)
+        self.lower['green'] = np.array([30,127,50],np.uint8)
+        self.upper['green'] = np.array([70,255,204],np.uint8)
 
     def track_it(self):
         f, orig_img = self.capture.read()
@@ -57,6 +60,11 @@ class ColourTracker:
             for key in allContours.iterkeys():
                 if(cv2.contourArea(allContours[key]) <100 or i>1 ):
                     break;
+
+                self.present[color]['present'] = True
+                timestamp = str (datetime.datetime.utcnow());
+                self.present[color]['timestamp'] = timestamp;
+
                 self.printText(orig_img,allContours[key],color)
                 cv2.drawContours(orig_img,[allContours[key]], 0, (0, 0, 255),2)
                 i+=1;
@@ -70,7 +78,7 @@ class ColourTracker:
             cv2.destroyAllWindows()
             self.capture.release()
             break
-        return 1;
+        return self.present;
 
     def printText(self, img, contour, text):
         # text_size,f = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 1, thickness=2)

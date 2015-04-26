@@ -1,5 +1,5 @@
 __author__ = 'ashishrawat'
-__author__ = 'ashishrawat'
+
 
 
 import cv2, math
@@ -7,6 +7,7 @@ import numpy as np
 
 from collections import OrderedDict
 import time
+import datetime
 class ColourTracker:
     def __init__(self):
         cv2.namedWindow("ColourTrackerWindow", cv2.CV_WINDOW_AUTOSIZE)
@@ -16,8 +17,12 @@ class ColourTracker:
         # self.kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3,3))
         # self.fgbg = cv2.BackgroundSubtractorMOG()
 
-        self.colors = ( 'blue',)
-        # 'red', 'green')
+        self.colors = ( 'blue','red', 'green' )
+        self.present = {'red':{}, 'blue':{}, 'green':{}}
+        for key in self.present:
+            self.present[key]['present'] = False
+            self.present[key]['timestamp'] = None
+        print self.present
         self.scale_down = 4
         self.lower = {}
         self.upper = {}
@@ -25,14 +30,14 @@ class ColourTracker:
         self.yy = 1
 
 
-        self.lower['blue'] = np.array([95, 112, 60],np.uint8)
-        self.upper['blue'] = np.array([130, 255, 245],np.uint8)
+        self.lower['blue'] = np.array([105, 125, 70],np.uint8)
+        self.upper['blue'] = np.array([120, 255, 180],np.uint8)
 
         self.lower['red'] = np.array([160, 120, 80],np.uint8)
         self.upper['red'] = np.array([180, 255, 200],np.uint8)
 
-        self.lower['green'] = np.array([85,80,150],np.uint8)
-        self.upper['green'] = np.array([155,255,160],np.uint8)
+        self.lower['green'] = np.array([50,140,50],np.uint8)
+        self.upper['green'] = np.array([70,255,200],np.uint8)
 
     def track_it(self):
         while True:
@@ -76,10 +81,15 @@ class ColourTracker:
                     # rect = ((rect[0][0] * self.scale_down, rect[0][1] * self.scale_down), (rect[1][0] * self.scale_down, rect[1][1] * self.scale_down), rect[2])
                     # box = cv2.cv.BoxPoints(rect)
                     # box = np.int0(box)
-
+                    self.present[color]['present'] = True
+                    timestamp = str (datetime.datetime.utcnow());
+                    print timestamp
+                    self.present[color]['timestamp'] = timestamp;
+                    print color,"  " ,self.present[color]
+                    print "\n\n\n"
                     self.printText(orig_img,allContours[key],color)
 
-                    cv2.drawContours(orig_img,[allContours[key]], 0, (0, 0, 255),2)
+                    cv2.drawContours(orig_img,[allContours[key]], 0, (0, 0, 255),1)
                     i+=1;
 
                 # break for blue color
