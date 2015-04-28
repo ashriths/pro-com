@@ -17,12 +17,13 @@ from model.node import Node
 BUFFER_SIZE = 1024
 
 class NodeGenerator(Node):
-    def __init__(self, network_address):
-        self.init_network(network_address)
-        self.init_tracker()
+    def __init__(self, network_address, loc):
+        self.init_network(network_address, loc)
+        # self.init_tracker()
 
-    def init_network(self, network_address):
+    def init_network(self, network_address,loc):
         Node.__init__(self)
+        self.loc = loc
         self.network_address = network_address
         self.neighbor_map = {}
         self.socket = None
@@ -57,13 +58,9 @@ class NodeGenerator(Node):
         self.lower['green'] = np.array([30,127,50],np.uint8)
         self.upper['green'] = np.array([70,255,204],np.uint8)
 
-    def broadcast_neighbours(self, message):
-        for node in self.neighbors:
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.connect((node.ip, node.port))
-            s.send(message)
-            s.close()
 
+
+   
     def printText(self, img, contour, text):
         # text_size,f = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 1, thickness=2)
         # corner1 = tuple(approx[0][0])
@@ -153,7 +150,11 @@ class NodeGenerator(Node):
                         self.objects[color]['data']['history'].append({'ts': self.present[color]['timestamp'], 'node' : self.port})
                     msg = json.dumps({'type': 'object_info', 'data': {'color': color, 'history' : self.objects[color]['data']['history'] }})   
                     print msg
-                    self.broadcast_neighbours(msg)
+                    # self.broadcast_neighbours(msg)
+                    admin = socket.socket()
+                    admin.connect(self.network_address)
+                    admin.send(json.dumps({'type': 'object_info', 'data': msg}))
+                    admin.close()
             # color = 'red' # update this line to get me the color of the object from tracker
             # msg = json.dumps({'type': 'object_info', 'data': {'color': color, 'history' : self.objects[color].data.history }})
             # print msg
@@ -176,7 +177,7 @@ class NodeGenerator(Node):
         # tell my listening port and address to the network admin
         admin = socket.socket()
         admin.connect(self.network_address)
-        admin.send(json.dumps({'type': 'intro', 'data': {'port': self.port, 'ip': self.ip}}))
+        admin.send(json.dumps({'type': 'intro', 'data': {'port': self.port, 'ip': self.ip, 'loc': self.loc}}))
         admin.close()
         while True:
             self.socket.listen(5)
@@ -189,6 +190,10 @@ class NodeGenerator(Node):
             if message['type'] == 'admin_broadcast':
                 data = message['data']
                 print "BROADCAST: %s" % data
+            if message['type']== 'neighbor_info':
+                data=message['data']
+                self.neighbors.append(data)
+                print "NEIGHBOR INFO: %s" % data
             if message['type'] == 'object_info':
                 data = message['data']
                 print "Received Object data : %s" % data
@@ -197,14 +202,29 @@ class NodeGenerator(Node):
         except Exception:
             print 'Bad Message received'
 
+    def message(self,address, msg):
+        s = socket.socket()
+        s.connect(address)
+        s.send(msg)
+        s.close()
+
+     def broadcast_neighbours(self, message):
+        for node in self.neighbors:
+            self.message((node.ip,node.port),message)
+
+
+    def heartbeat(self):
+        #broadcast_neighbours()
+        pass
+
 
     def stop(self):
         self.listener.terminate()
-        self.tracker.terminate()
+        #self.tracker.terminate()
 
     def start(self):
         self.listener.start()
-        self.track()
+        #self.track()
         
 
 

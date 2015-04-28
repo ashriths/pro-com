@@ -4,10 +4,11 @@ import logging
 import socket
 
 class Node(object):
-    def __init__(self, ip='192.168.43.124', port=5000):
+    def __init__(self, ip='192.168.43.124', port=5000, loc = (0,0)):
         self.neighbors = []
         self.ip = ip
         self.port = port
+        self.loc = loc
 
     def get_host_ip(self):
         self.ip = socket.gethostbyname(socket.gethostname())

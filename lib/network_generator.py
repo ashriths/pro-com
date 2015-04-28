@@ -4,7 +4,7 @@ import socket
 from multiprocessing import Process
 from threading import Thread
 import json
-
+import math
 from model.node import Node
 
 
@@ -19,6 +19,7 @@ class NetworkGenerator(Thread):
         self.socket = None
         self.port = None
 
+        # self.ip = '192.168.43.116'
         self.ip = '127.0.0.1'
         #self.listener = Process(target=self.listen)
     '''
@@ -27,6 +28,12 @@ class NetworkGenerator(Thread):
     '''
     #var =  socket.gethostbyname(socket.gethostname())
 
+    def message(self,address, msg):
+        s = socket.socket()
+        s.connect(address)
+        s.send(msg)
+        s.close()
+    
     def run(self):
         self.listen()
 
@@ -59,18 +66,47 @@ class NetworkGenerator(Thread):
         message = json.loads(msg)
         if message['type'] == 'intro':
             data = message['data']
-            node = Node(ip=data['ip'], port=data['port'])
+            node = Node(ip=data['ip'], port=data['port'], loc=data['loc'])
+            neighbors = self.find_neighbors(node)
             self.nodes.append(node)
             self.broadcast(json.dumps(
                 {'type': 'admin_broadcast', 'from': 'admin', 'data': "New Node in Network, Address : %s" % str(data)}))
-            print "New request to join Network (Addr1ess : %s )" % str(data)
+            print "New request to join Network (Address : %s )" % str(data)
             print "Total Nodes in Network = " + str(len(self.nodes))
-            print self.nodes
+            # print self.nodes
+
+            # set neighbors
+            print "Neighbours found :"+str(neighbors)
+            if len(neighbors) > 0:
+                self.message((node.ip, node.port),json.dumps({'type': 'neighbor_info', 'from': 'admin', 'data': neighbors }))
+        else :
+            print message
+
+    def find_distance(self,node1, node2):
+        print node1.loc, node2.loc
+        return math.sqrt((node1.loc[0]-node2.loc[0])**2 + (node1.loc[1]-node2.loc[1])**2 )
+
+    def find_neighbors(self, new_node):
+        nodes = []
+        mins = []
+        for node in self.nodes:
+            dist = self.find_distance(new_node, node)
+            if len(nodes) < 2:
+                if len(nodes)!=0 and dist < mins[0]:
+                    nodes.insert(0,node)
+                    mins.insert(0,dist)
+                else:
+                    nodes.append(node)
+                    mins.append(dist)
+        send = []
+        for node in nodes:
+            send.append({'ip':node.ip, 'port' : node.port, 'loc': node.loc })
+        return send
 
 
     def stop(self):
-            self.run = False
-            print "Server Stopped"
+        self.run = False
+        print "Server Stopped"
     # def start(self):
     #     self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     #     self.listener.run()
